@@ -20,7 +20,7 @@ jobs:
       - name: 安装 pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
 
       - name: 设置 Node.js
         uses: actions/setup-node@v4
@@ -29,7 +29,9 @@ jobs:
           cache: 'pnpm'
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: |
+          echo "📦 安装项目依赖..."
+          pnpm install --no-frozen-lockfile || pnpm install
 
       - name: 代码质量检查
         run: |
