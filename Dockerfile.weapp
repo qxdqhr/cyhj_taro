@@ -1,0 +1,63 @@
+# 微信小程序构建 Dockerfile
+FROM node:20-alpine AS base
+
+# 安装依赖阶段
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 复制依赖文件
+COPY package.json pnpm-lock.yaml* ./
+
+# 安装依赖
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile --prefer-offline
+
+# 构建阶段
+FROM base AS builder
+WORKDIR /app
+
+# 安装 pnpm
+RUN npm install -g pnpm
+
+# 复制依赖
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# 设置环境变量
+ENV NODE_ENV=production
+ENV API_BASE_URL=${API_BASE_URL:-http://localhost:3000}
+
+# 更新API配置
+RUN sed -i "s|http://localhost:3000|${API_BASE_URL}|g" src/services/*.ts
+
+# 构建微信小程序
+RUN pnpm run build:weapp
+
+# 生产阶段
+FROM alpine:latest AS runner
+WORKDIR /app
+
+# 安装必要的工具
+RUN apk add --no-cache curl
+
+# 复制构建结果
+COPY --from=builder /app/dist ./dist
+
+# 创建输出目录
+RUN mkdir -p /output
+
+# 复制小程序代码到输出目录
+RUN cp -r dist/* /output/
+
+# 设置工作目录
+WORKDIR /output
+
+# 暴露端口（如果需要静态文件服务）
+EXPOSE 8080
+
+# 启动命令（可选：提供静态文件服务）
+CMD ["sh", "-c", "echo '微信小程序构建完成，代码位于 /output 目录' && tail -f /dev/null"] 
