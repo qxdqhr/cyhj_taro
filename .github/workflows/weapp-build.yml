@@ -21,23 +21,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: 安装依赖
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: 代码质量检查
         run: |
           echo "🔍 运行代码质量检查..."
-          npm run test
-          npx eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
-          npx stylelint "src/**/*.{css,scss,less}" --max-warnings 0
+          pnpm test
+          pnpm exec eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
+          pnpm exec stylelint "src/**/*.{css,scss,less}" --max-warnings 0
 
       - name: 构建微信小程序
         run: |
-          npm install
           echo "🏗️ 开始构建微信小程序..."
-          npm run build:weapp
+          pnpm build:weapp
           echo "✅ 构建完成！"
 
       - name: 检查构建产物
