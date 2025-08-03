@@ -21,23 +21,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: 安装依赖
-        run: pnpm ci
+        run: npm ci
 
       - name: 代码质量检查
         run: |
           echo "🔍 运行代码质量检查..."
-          pnpm run test
+          npm run test
           npx eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
           npx stylelint "src/**/*.{css,scss,less}" --max-warnings 0
 
       - name: 构建微信小程序
         run: |
-          pnpm install
+          npm install
           echo "🏗️ 开始构建微信小程序..."
-          pnpm run build:weapp
+          npm run build:weapp
           echo "✅ 构建完成！"
 
       - name: 检查构建产物
