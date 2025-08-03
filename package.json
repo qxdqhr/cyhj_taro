@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
+    "@babel/plugin-proposal-decorators": "^7.28.0",
     "@tarojs/cli": "4.1.4",
     "@tarojs/test-utils-react": "^0.1.1",
     "@tarojs/vite-runner": "4.1.4",

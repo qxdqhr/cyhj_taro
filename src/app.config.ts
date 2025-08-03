@@ -1,4 +1,4 @@
-export default defineAppConfig({
+export default {
   pages: [
     'pages/index/index',
     'pages/collection/index',
@@ -12,4 +12,4 @@ export default defineAppConfig({
     navigationBarTextStyle: 'black',
     backgroundColor: '#f8fafc'
   }
-})
+}
