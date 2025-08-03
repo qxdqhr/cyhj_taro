@@ -38,6 +38,8 @@ jobs:
         run: |
           echo "🏗️ 开始构建微信小程序..."
           pnpm build:weapp
+          echo "🧹 清理CSS文件..."
+          pnpm clean-css
           echo "✅ 构建完成！"
 
       - name: 检查构建产物
