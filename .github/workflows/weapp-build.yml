@@ -1,0 +1,102 @@
+name: 微信小程序构建
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 代码质量检查
+        run: |
+          echo "🔍 运行代码质量检查..."
+          npm run test
+          npx eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
+          npx stylelint "src/**/*.{css,scss,less}" --max-warnings 0
+
+      - name: 构建微信小程序
+        run: |
+          echo "🏗️ 开始构建微信小程序..."
+          npm run build:weapp
+          echo "✅ 构建完成！"
+
+      - name: 检查构建产物
+        run: |
+          echo "📁 检查构建产物..."
+          ls -la dist/
+          echo "📊 构建产物大小:"
+          du -sh dist/
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: weapp-build-${{ github.run_number }}
+          path: dist/
+          retention-days: 30
+
+      - name: 构建成功通知
+        run: |
+          echo "🎉 微信小程序构建成功！"
+          echo "📦 版本号: ${{ github.run_number }}"
+          echo "🔗 提交: ${{ github.sha }}"
+          echo "📝 提交信息: ${{ github.event.head_commit.message }}"
+          echo ""
+          echo "📋 下一步具体操作步骤："
+          echo ""
+          echo "1️⃣ 下载构建产物："
+          echo "   - 点击上方 'Artifacts' 部分"
+          echo "   - 下载 'weapp-build-${{ github.run_number }}' 文件"
+          echo "   - 解压到本地目录"
+          echo ""
+          echo "2️⃣ 使用微信开发者工具："
+          echo "   - 打开微信开发者工具"
+          echo "   - 选择 '导入项目'"
+          echo "   - 选择解压后的 dist/ 目录"
+          echo "   - 输入小程序的 AppID"
+          echo ""
+          echo "3️⃣ 预览和测试："
+          echo "   - 在开发者工具中点击 '预览'"
+          echo "   - 使用微信扫码在手机上测试"
+          echo "   - 检查所有功能是否正常"
+          echo "   - 测试各个页面和组件"
+          echo ""
+          echo "4️⃣ 上传代码："
+          echo "   - 在开发者工具中点击 '上传'"
+          echo "   - 填写版本号和项目备注"
+          echo "   - 确认上传到微信开发者平台"
+          echo ""
+          echo "5️⃣ 提交审核："
+          echo "   - 登录微信公众平台"
+          echo "   - 进入 '开发管理' -> '版本管理'"
+          echo "   - 选择刚上传的版本"
+          echo "   - 点击 '提交审核'"
+          echo "   - 填写审核信息并提交"
+          echo ""
+          echo "6️⃣ 发布上线："
+          echo "   - 审核通过后，在版本管理页面"
+          echo "   - 点击 '发布' 按钮"
+          echo "   - 确认发布到线上环境"
+          echo ""
+          echo "🔗 相关链接："
+          echo "   - 微信开发者工具：https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html"
+          echo "   - 微信公众平台：https://mp.weixin.qq.com/"
+          echo "   - Taro 文档：https://taro.jd.com/" 

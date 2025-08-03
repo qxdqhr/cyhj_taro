@@ -7,8 +7,10 @@ pnpm-debug.log*
 
 # 构建输出
 dist
+build
 .next
-out
+.nuxt
+.vuepress/dist
 
 # 环境变量文件
 .env
