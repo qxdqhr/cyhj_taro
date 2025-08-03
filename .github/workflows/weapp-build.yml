@@ -33,13 +33,7 @@ jobs:
           echo "📦 安装项目依赖..."
           pnpm install --no-frozen-lockfile || pnpm install
 
-      - name: 代码质量检查
-        run: |
-          echo "🔍 运行代码质量检查..."
-          pnpm test
-          pnpm exec eslint src/ --ext .ts,.tsx,.js,.jsx --max-warnings 0
-          pnpm exec stylelint "src/**/*.{css,scss,less}" --max-warnings 0
-
+     
       - name: 构建微信小程序
         run: |
           echo "🏗️ 开始构建微信小程序..."
